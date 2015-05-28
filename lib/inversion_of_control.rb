@@ -44,9 +44,17 @@ module InversionOfControl
   end
 
   def self.prepare_resolved_dependency(resolved_dependency)
-    prepared_dependency = resolved_dependency
 
-    if @configuration.instantiate_dependencies
+    instantiate_dependencies = @configuration.instantiate_dependencies
+
+    if resolved_dependency.is_a?(Hash)
+      prepared_dependency = resolved_dependency[:dependency]
+      instantiate_dependencies = resolved_dependency[:instantiate] unless resolved_dependency[:instantiate].nil?
+    else
+      prepared_dependency = resolved_dependency
+    end
+
+    if prepared_dependency.is_a?(Class) && instantiate_dependencies
       if prepared_dependency.ancestors.include?(InversionOfControl)
         prepared_dependency = prepared_dependency.build
       else

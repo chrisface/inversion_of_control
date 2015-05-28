@@ -141,7 +141,6 @@ describe InversionOfControl do
         context "and the class does not include InversionOfControl" do
           it "instantiates the Class via .new" do
             prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
-
             expect(prepared_dependency.class).to eq(resolved_dependency)
           end
         end
@@ -156,7 +155,6 @@ describe InversionOfControl do
           it "instantiates the class via .build" do
             allow(resolved_dependency).to receive(:build).and_call_original
             prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
-
             expect(prepared_dependency.class).to eq(resolved_dependency)
             expect(resolved_dependency).to have_received(:build)
           end
@@ -168,9 +166,50 @@ describe InversionOfControl do
 
         it "does not instantiatethe class" do
           prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
-
           expect(prepared_dependency).to eq(resolved_dependency)
         end
+      end
+    end
+
+    context "when the dependency is configured with a Hash" do
+      let(:resolved_dependency) {
+        Class.new do
+          include InversionOfControl
+        end
+      }
+
+      let(:dependency_configuration) {
+        {
+          dependency: resolved_dependency
+        }
+      }
+
+      it "retreives the dependency from the Hash configuration" do
+        prepared_dependency = described_class.prepare_resolved_dependency(dependency_configuration)
+        expect(prepared_dependency).to eq(resolved_dependency)
+      end
+
+      context "and the config option instantiate differs to the default" do
+        let(:dependency_configuration) {
+          {
+            dependency: resolved_dependency,
+            instantiate: true
+          }
+        }
+
+        it "the dependency configuration takes precedence" do
+          prepared_dependency = described_class.prepare_resolved_dependency(dependency_configuration)
+          expect(prepared_dependency.class).to eq(resolved_dependency)
+        end
+      end
+    end
+
+    context "when the dependency is neither a hash or class" do
+      let(:resolved_dependency) { "I'm a dependency" }
+
+      it "no preparation is performed" do
+        prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
+        expect(prepared_dependency).to eq(resolved_dependency)
       end
     end
   end
