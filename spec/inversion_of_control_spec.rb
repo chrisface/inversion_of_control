@@ -60,16 +60,16 @@ describe InversionOfControl do
 
   describe ".resolve_dependency" do
     context "when the dependency is registered in config" do
-      let(:resloved_dependency) { double() }
+      let(:resolved_dependency) { double() }
 
       before(:each) do
         described_class.configure do |config|
-          config.dependencies[:a_dependency] = resloved_dependency
+          config.dependencies[:a_dependency] = resolved_dependency
         end
       end
 
       it "returns the dependency that was registered" do
-        expect(described_class.resolve_dependency(:a_dependency)).to eq(resloved_dependency)
+        expect(described_class.resolve_dependency(:a_dependency)).to eq(resolved_dependency)
       end
     end
 
@@ -95,8 +95,8 @@ describe InversionOfControl do
         it "resolves the dependency based on the name of the dependency" do
           expected_error = "un-registered dependency: unregistered"
 
-          resloved_dependency = described_class.resolve_dependency(:test_dependency)
-          expect(resloved_dependency).to eq(TestDependency)
+          resolved_dependency = described_class.resolve_dependency(:test_dependency)
+          expect(resolved_dependency).to eq(TestDependency)
         end
       end
     end
@@ -104,8 +104,8 @@ describe InversionOfControl do
 
   describe ".resolve_dependency_by_name" do
     it "finds a dependency by name" do
-      resloved_dependency = described_class.resolve_dependency_by_name(:test_dependency)
-      expect(resloved_dependency).to eq(TestDependency)
+      resolved_dependency = described_class.resolve_dependency_by_name(:test_dependency)
+      expect(resolved_dependency).to eq(TestDependency)
     end
   end
 
@@ -132,7 +132,7 @@ describe InversionOfControl do
     let(:instantiate_dependencies) { false }
 
     context "when the dependency is a class" do
-      let(:resloved_dependency) {
+      let(:resolved_dependency) {
         Class.new do end
       }
       context "and the instantiate_dependencies config option is ON" do
@@ -140,25 +140,25 @@ describe InversionOfControl do
 
         context "and the class does not include InversionOfControl" do
           it "instantiates the Class via .new" do
-            prepared_dependency = described_class.prepare_resolved_dependency(resloved_dependency)
+            prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
 
-            expect(prepared_dependency.class).to eq(resloved_dependency)
+            expect(prepared_dependency.class).to eq(resolved_dependency)
           end
         end
 
         context "and the class includes InversionOfControl" do
-          let(:resloved_dependency) {
+          let(:resolved_dependency) {
             Class.new do
               include InversionOfControl
             end
           }
 
           it "instantiates the class via .build" do
-            allow(resloved_dependency).to receive(:build).and_call_original
-            prepared_dependency = described_class.prepare_resolved_dependency(resloved_dependency)
+            allow(resolved_dependency).to receive(:build).and_call_original
+            prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
 
-            expect(prepared_dependency.class).to eq(resloved_dependency)
-            expect(resloved_dependency).to have_received(:build)
+            expect(prepared_dependency.class).to eq(resolved_dependency)
+            expect(resolved_dependency).to have_received(:build)
           end
         end
       end
@@ -167,9 +167,9 @@ describe InversionOfControl do
         let(:instantiate_dependencies) { false }
 
         it "does not instantiatethe class" do
-          prepared_dependency = described_class.prepare_resolved_dependency(resloved_dependency)
+          prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
 
-          expect(prepared_dependency).to eq(resloved_dependency)
+          expect(prepared_dependency).to eq(resolved_dependency)
         end
       end
     end
