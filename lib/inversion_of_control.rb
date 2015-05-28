@@ -41,6 +41,10 @@ module InversionOfControl
     Object.const_get(class_name)
   end
 
+  def self.register_dependency(dependency_name, dependency)
+    @configuration.dependencies[dependency_name] = dependency
+  end
+
   def self.included(klass)
     klass.extend(InversionOfControl::DSL)
     klass.extend(InversionOfControl::Builder)

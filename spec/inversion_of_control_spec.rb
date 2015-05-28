@@ -109,6 +109,19 @@ describe InversionOfControl do
     end
   end
 
+  describe ".register_dependency" do
+    let(:dependency_name) { :a_dependency }
+    let(:dependency) { double }
+
+    it "it registers the dependency" do
+      expected_error = "un-registered dependency: #{dependency_name}"
+      expect { described_class.resolve_dependency(dependency_name) }.to raise_error(expected_error)
+
+      described_class.register_dependency(dependency_name, dependency)
+      described_class.resolve_dependency(dependency_name)
+    end
+  end
+
   describe "#inject_dependency" do
     let(:dummy_class) do
       Class.new do
