@@ -31,6 +31,8 @@ module InversionOfControl
 
     raise "un-registered dependency: #{dependency}" if resolved_dependency.nil?
 
+    resolved_dependency = prepare_resolved_dependency(resolved_dependency)
+
     resolved_dependency
   end
 
@@ -39,6 +41,20 @@ module InversionOfControl
         .split("_").each {|s| s.capitalize! }.join("")
 
     Object.const_get(class_name)
+  end
+
+  def self.prepare_resolved_dependency(resolved_dependency)
+    prepared_dependency = resolved_dependency
+
+    if @configuration.instantiate_dependencies
+      if prepared_dependency.ancestors.include?(InversionOfControl)
+        prepared_dependency = prepared_dependency.build
+      else
+        prepared_dependency = prepared_dependency.new
+      end
+    end
+
+    prepared_dependency
   end
 
   def self.register_dependency(dependency_name, dependency)

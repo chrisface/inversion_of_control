@@ -122,6 +122,59 @@ describe InversionOfControl do
     end
   end
 
+  describe ".prepare_resolved_dependency" do
+    before(:each) do
+      described_class.configure do |config|
+        config.instantiate_dependencies = instantiate_dependencies
+      end
+    end
+
+    let(:instantiate_dependencies) { false }
+
+    context "when the dependency is a class" do
+      let(:resloved_dependency) {
+        Class.new do end
+      }
+      context "and the instantiate_dependencies config option is ON" do
+        let(:instantiate_dependencies) { true }
+
+        context "and the class does not include InversionOfControl" do
+          it "instantiates the Class via .new" do
+            prepared_dependency = described_class.prepare_resolved_dependency(resloved_dependency)
+
+            expect(prepared_dependency.class).to eq(resloved_dependency)
+          end
+        end
+
+        context "and the class includes InversionOfControl" do
+          let(:resloved_dependency) {
+            Class.new do
+              include InversionOfControl
+            end
+          }
+
+          it "instantiates the class via .build" do
+            allow(resloved_dependency).to receive(:build).and_call_original
+            prepared_dependency = described_class.prepare_resolved_dependency(resloved_dependency)
+
+            expect(prepared_dependency.class).to eq(resloved_dependency)
+            expect(resloved_dependency).to have_received(:build)
+          end
+        end
+      end
+
+      context "and the instantiate_dependencies config option is OFF" do
+        let(:instantiate_dependencies) { false }
+
+        it "does not instantiatethe class" do
+          prepared_dependency = described_class.prepare_resolved_dependency(resloved_dependency)
+
+          expect(prepared_dependency).to eq(resloved_dependency)
+        end
+      end
+    end
+  end
+
   describe "#inject_dependency" do
     let(:dummy_class) do
       Class.new do
