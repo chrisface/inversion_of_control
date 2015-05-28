@@ -1,8 +1,14 @@
 # InversionOfControl
 
-Inversion Of Control Gem, hoooray
+Dependency Injection is a powerful design pattern which can be utilised to help build loosely coupled and maintainable code. This pattern is quite commonly used for dependencies between services.
 
-TODO: Delete this and the text above, and describe your gem
+When the dependencies themselves become non-trivial though, it can become difficult to construct an object without also knowing how to inject it's dependencies. The coupling has been shifted from one side of the dependency to the other.
+
+Using an Inversion of Control container it's possible to alleviate this problem by moving the responsibility of injecting the dependency to the IOC container.
+
+This has other benefits such as being able to swap out implementations of a dependency at the container level without having to change the dependency itself or classes that depend on it.
+
+The InversionOfControl gem brings an easy to configure IOC container while keeping your code boiler-plate free by utilising a simple DSL.
 
 ## Installation
 
