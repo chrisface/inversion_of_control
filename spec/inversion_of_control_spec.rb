@@ -74,10 +74,38 @@ describe InversionOfControl do
     end
 
     context "when the dependency is not registered in config" do
-      it "raises an un-registered dependency error" do
-        expected_error = "un-registered dependency: unregistered"
-        expect { described_class.resolve_dependency(:unregistered) }.to raise_error(expected_error)
+      before(:each) do
+        described_class.configure do |config|
+          config.auto_resolve_unregistered_dependency = auto_resolve
+        end
       end
+
+      context "and auto_resolve_unregistered_dependency config option is OFF" do
+        let(:auto_resolve) { false }
+
+        it "raises an un-registered dependency error" do
+          expected_error = "un-registered dependency: unregistered"
+          expect { described_class.resolve_dependency(:unregistered) }.to raise_error(expected_error)
+        end
+      end
+
+      context "and the auto_resolve_unregistered_dependency config option is ON" do
+        let(:auto_resolve) { true }
+
+        it "resolves the dependency based on the name of the dependency" do
+          expected_error = "un-registered dependency: unregistered"
+
+          resloved_dependency = described_class.resolve_dependency(:test_dependency)
+          expect(resloved_dependency).to eq(TestDependency)
+        end
+      end
+    end
+  end
+
+  describe ".resolve_dependency_by_name" do
+    it "finds a dependency by name" do
+      resloved_dependency = described_class.resolve_dependency_by_name(:test_dependency)
+      expect(resloved_dependency).to eq(TestDependency)
     end
   end
 

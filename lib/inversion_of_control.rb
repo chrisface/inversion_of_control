@@ -23,8 +23,22 @@ module InversionOfControl
 
   def self.resolve_dependency(dependency)
     resolved_dependency = @configuration.dependencies[dependency]
+
+    # Try and find the dependency by name when missing if the config is turned on
+    if resolved_dependency.nil? && @configuration.auto_resolve_unregistered_dependency
+      resolved_dependency = self.resolve_dependency_by_name(dependency)
+    end
+
     raise "un-registered dependency: #{dependency}" if resolved_dependency.nil?
+
     resolved_dependency
+  end
+
+  def self.resolve_dependency_by_name(dependency)
+    class_name = "#{dependency}"
+        .split("_").each {|s| s.capitalize! }.join("")
+
+    Object.const_get(class_name)
   end
 
   def self.included(klass)
