@@ -78,7 +78,7 @@ module InversionOfControl
     self.instance_variable_set("@#{dependency}", resolved_dependency)
   end
 
-  def inject_dependencies(dependencies)
+  def inject_dependencies(dependencies = self.class.resolve_dependencies_from_class)
     dependencies.each do |dependency, resolved_dependency|
       self.inject_dependency(dependency, resolved_dependency)
     end
