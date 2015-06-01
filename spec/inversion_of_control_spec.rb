@@ -23,7 +23,7 @@ describe InversionOfControl do
 
   describe ".reset" do
     context "when there was config already set" do
-      before :each do
+      before(:each) do
         described_class.configure do |config|
           config.dependencies = {data: "here"}
         end
@@ -37,12 +37,25 @@ describe InversionOfControl do
         expect(config.dependencies).to eq({})
       end
     end
+    context "when the dependency analyzer was tracking classes" do
+      before(:each) do
+        described_class.dependency_analyzer.track_class(Class)
+      end
+
+      it "resets the tracked classes" do
+        expect(described_class.dependency_analyzer.tracked_classes).to match_array(Class)
+
+        described_class.reset
+
+        expect(described_class.dependency_analyzer.tracked_classes).to be_empty
+      end
+    end
   end
 
   describe ".included" do
     context "when included into a class" do
 
-      let(:dummy_class) do
+      let!(:dummy_class) do
         Class.new do
           include InversionOfControl
         end
@@ -54,6 +67,11 @@ describe InversionOfControl do
 
       it "adds the build method for instantiation" do
         expect(dummy_class).to respond_to(:build)
+      end
+
+      it "tracks the class in the dependency analyzer" do
+        da = InversionOfControl.dependency_analyzer
+        expect(da.tracked_classes).to match_array(dummy_class)
       end
     end
   end

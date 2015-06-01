@@ -2,11 +2,12 @@ require "inversion_of_control/version"
 require "inversion_of_control/configuration"
 require "inversion_of_control/dsl"
 require "inversion_of_control/builder"
+require "inversion_of_control/dependency_analyzer"
 
 module InversionOfControl
 
   class << self
-    attr_accessor :configuration
+    attr_accessor :configuration, :dependency_analyzer
   end
 
   def self.configuration
@@ -19,6 +20,11 @@ module InversionOfControl
 
   def self.reset
     @configuration = Configuration.new
+    @dependency_analyzer = InversionOfControl::DependencyAnalyzer.new
+  end
+
+  def self.dependency_analyzer
+    @dependency_analyzer ||= InversionOfControl::DependencyAnalyzer.new
   end
 
   def self.resolve_dependency(dependency)
@@ -72,6 +78,7 @@ module InversionOfControl
   def self.included(klass)
     klass.extend(InversionOfControl::DSL)
     klass.extend(InversionOfControl::Builder)
+    dependency_analyzer.track_class(klass)
   end
 
   def inject_dependency(dependency, resolved_dependency)
