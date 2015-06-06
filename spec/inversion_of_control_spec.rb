@@ -157,7 +157,7 @@ describe InversionOfControl do
         let(:instantiate_dependencies) { true }
 
         context "and the class does not include InversionOfControl" do
-          it "instantiates the Class via .new" do
+          it "instantiates the Class" do
             prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
             expect(prepared_dependency.class).to eq(resolved_dependency)
           end
@@ -170,11 +170,12 @@ describe InversionOfControl do
             end
           }
 
-          it "instantiates the class via .build" do
-            allow(resolved_dependency).to receive(:build).and_call_original
+          it "instantiates the Class and injects dependencies" do
+            allow_any_instance_of(resolved_dependency).to receive(:inject_dependencies).and_call_original
+
             prepared_dependency = described_class.prepare_resolved_dependency(resolved_dependency)
             expect(prepared_dependency.class).to eq(resolved_dependency)
-            expect(resolved_dependency).to have_received(:build)
+            expect(prepared_dependency).to have_received(:inject_dependencies)
           end
         end
       end

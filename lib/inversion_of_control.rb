@@ -61,10 +61,10 @@ module InversionOfControl
     end
 
     if prepared_dependency.is_a?(Class) && instantiate_dependencies
-      if prepared_dependency.ancestors.include?(InversionOfControl)
-        prepared_dependency = prepared_dependency.build
-      else
-        prepared_dependency = prepared_dependency.new
+      prepared_dependency = prepared_dependency.new
+
+      if prepared_dependency.class.ancestors.include?(InversionOfControl)
+        prepared_dependency.inject_dependencies
       end
     end
 
