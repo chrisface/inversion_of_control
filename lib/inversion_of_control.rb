@@ -37,8 +37,6 @@ module InversionOfControl
 
     raise "un-registered dependency: #{dependency}" if resolved_dependency.nil?
 
-    resolved_dependency = prepare_resolved_dependency(resolved_dependency)
-
     resolved_dependency
   end
 
