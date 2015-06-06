@@ -159,5 +159,117 @@ describe InversionOfControl::Builder do
         expect(dummy_instance.a_dependency).to eq(resloved_dependency)
       end
     end
+
+    context "with a circular dependencies" do
+
+      before(:each) do
+        InversionOfControl.configure do |config|
+          config.auto_resolve_unregistered_dependency = true
+          config.instantiate_dependencies = true
+        end
+      end
+
+      context "between two classes" do
+
+        before(:each) do
+          class DependencyA
+            include InversionOfControl
+            inject(:dependency_b)
+          end
+
+          class DependencyB
+            include InversionOfControl
+            inject(:dependency_a)
+          end
+        end
+
+        after(:each) do
+          [:DependencyA, :DependencyB ].each do |class_symbol|
+            Object.send(:remove_const, class_symbol)
+          end
+        end
+
+        it "injects the classes into each other" do
+          dependency_a = DependencyA.build
+          dependency_b = dependency_a.dependency_b
+          dependency_a_circular = dependency_b.dependency_a
+
+          expect(dependency_a).to eq(dependency_a_circular)
+        end
+      end
+
+      context "through three classes" do
+        before(:each) do
+          class DependencyA
+            include InversionOfControl
+            inject(:dependency_b)
+          end
+
+          class DependencyB
+            include InversionOfControl
+            inject(:dependency_c)
+          end
+
+          class DependencyC
+            include InversionOfControl
+            inject(:dependency_a)
+          end
+        end
+
+        after(:each) do
+          [:DependencyA, :DependencyB, :DependencyC ].each do |class_symbol|
+            Object.send(:remove_const, class_symbol)
+          end
+        end
+
+        it "injects the classes into each other" do
+          dependency_a = DependencyA.build
+          dependency_b = dependency_a.dependency_b
+          dependency_c = dependency_b.dependency_c
+          dependency_a_circular = dependency_c.dependency_a
+
+          expect(dependency_a).to eq(dependency_a_circular)
+        end
+      end
+
+      context "through three classes with a loop-back" do
+        before(:each) do
+          class DependencyA
+            include InversionOfControl
+            inject(:dependency_b)
+          end
+
+          class DependencyB
+            include InversionOfControl
+            inject(:dependency_c)
+          end
+
+          class DependencyC
+            include InversionOfControl
+            inject(:dependency_a, :dependency_b, :dependency_d)
+          end
+
+          class DependencyD
+          end
+        end
+
+        after(:each) do
+          [:DependencyA, :DependencyB, :DependencyC, :DependencyD ].each do |class_symbol|
+            Object.send(:remove_const, class_symbol)
+          end
+        end
+
+        it "injects the classes into each other" do
+          dependency_a = DependencyA.build
+          dependency_b = dependency_a.dependency_b
+          dependency_c = dependency_b.dependency_c
+          dependency_a_circular = dependency_c.dependency_a
+          dependency_b_circular = dependency_c.dependency_b
+
+          expect(dependency_a).to eq(dependency_a_circular)
+          expect(dependency_b).to eq(dependency_b_circular)
+        end
+      end
+    end
   end
 end

@@ -9,18 +9,13 @@ module InversionOfControl
         class_instance = self.new(*params, **keyword_args, &block)
       end
 
-      class_dependencies = resolve_dependencies_from_class(exclude: overriden_dependencies.keys)
+      overriden_dependencies.merge!(_root: class_instance)
 
-      # Class dependencies need to be prepared for injection. Overriden dependencies are assumed to already be preapred
-      prepared_dependencies = {}
-      class_dependencies.each do |resolved_dependency_name, resolved_dependency|
-        prepared_dependency = InversionOfControl.prepare_resolved_dependency(resolved_dependency)
-        prepared_dependencies[resolved_dependency_name] = prepared_dependency
-      end
+      resolved_dependencies = resolve_dependencies_from_class(
+        existing_resolved_dependencies: overriden_dependencies
+      )
 
-      prepared_dependencies.merge!(overriden_dependencies)
-
-      class_instance.inject_dependencies(prepared_dependencies)
+      class_instance.inject_dependencies(resolved_dependencies)
 
       class_instance
     end
@@ -37,9 +32,9 @@ module InversionOfControl
       resolved_dependencies
     end
 
-    def resolve_dependencies_from_class(exclude: [])
-      resolved_dependencies = (@dependencies - exclude).inject({}) do |resolved_dependencies, dependency|
-        resolved_dependency = InversionOfControl.resolve_dependency(dependency)
+    def resolve_dependencies_from_class(existing_resolved_dependencies: {})
+      resolved_dependencies = @dependencies.inject({}) do |resolved_dependencies, dependency|
+        resolved_dependency = InversionOfControl.resolve_dependency(dependency, existing_resolved_dependencies)
 
         resolved_dependencies[dependency] = resolved_dependency
         resolved_dependencies

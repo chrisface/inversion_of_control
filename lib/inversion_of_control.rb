@@ -27,7 +27,7 @@ module InversionOfControl
     @dependency_analyzer ||= InversionOfControl::DependencyAnalyzer.new
   end
 
-  def self.resolve_dependency(dependency)
+  def self.resolve_dependency(dependency, resolved_dependencies={})
     resolved_dependency = @configuration.dependencies[dependency]
 
     # Try and find the dependency by name when missing if the config is turned on
@@ -36,6 +36,46 @@ module InversionOfControl
     end
 
     raise "un-registered dependency: #{dependency}" if resolved_dependency.nil?
+
+    # If the dependency has alreay been resolved, then re-use it.
+    if resolved_dependencies.keys.include?(dependency)
+      resolved_dependency = resolved_dependencies[dependency]
+    else
+      resolved_dependency = prepare_resolved_dependency(resolved_dependency)
+
+      # If the root is of the same class as the dependency. It can be assumed
+      # that there is a circular dependency back to the root. Re-name the root
+      # Now that we have discovered what it's name is.
+      root_resolved_dependency = resolved_dependencies[:_root]
+      if root_resolved_dependency && resolved_dependency.class == root_resolved_dependency.class
+        resolved_dependencies[dependency] = root_resolved_dependency
+        resolved_dependencies.delete(:_root)
+        resolved_dependency = root_resolved_dependency
+      else
+        resolved_dependencies[dependency] = resolved_dependency
+      end
+    end
+
+    # Resolve any child dependencies
+    if resolved_dependency.class.ancestors.include?(InversionOfControl)
+      resolved_dependency.class.dependencies.each do |child_dependency|
+
+        # Create the child dependency if it has not already been resolved
+        unless resolved_dependencies.keys.include?(child_dependency)
+          resolved_child_dependency = self.resolve_dependency(child_dependency, resolved_dependencies)
+          resolved_dependencies[child_dependency] = resolved_child_dependency
+        end
+      end
+    end
+
+    # Inject dependencies after they have have been resolved
+    if resolved_dependency.class.ancestors.include?(InversionOfControl)
+      required_resolved_dependencies = resolved_dependencies.select do |dependency_name, available_resolved_dependency|
+        resolved_dependency.class.dependencies.include?(dependency_name)
+      end
+
+      resolved_dependency.inject_dependencies(required_resolved_dependencies)
+    end
 
     resolved_dependency
   end
@@ -60,10 +100,6 @@ module InversionOfControl
 
     if prepared_dependency.is_a?(Class) && instantiate_dependencies
       prepared_dependency = prepared_dependency.new
-
-      if prepared_dependency.class.ancestors.include?(InversionOfControl)
-        prepared_dependency.inject_dependencies
-      end
     end
 
     prepared_dependency
