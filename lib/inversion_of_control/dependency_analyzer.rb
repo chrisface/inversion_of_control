@@ -52,6 +52,11 @@ module InversionOfControl
 
         klass.resolve_dependencies_from_class.each do |dependency, resolved_dependency|
 
+          # We may have built the dependency based on the class, in which
+          # case the class is the real dependency, not its instantiated form.
+          resolved_dependency = resolved_dependency.class if InversionOfControl.configuration.instantiate_dependencies == true
+
+
           # The dependency may have incorrectly been assumed to be a static Class
           # dependency based on the order of discovery
           if child_node = nodes[resolved_dependency]
@@ -101,7 +106,7 @@ module InversionOfControl
       unless pathname.dirname.directory?
         FileUtils.mkdir_p(pathname.dirname)
       end
-      
+
       g.output( :png => file_path )
     end
   end
