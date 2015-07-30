@@ -1,4 +1,6 @@
 require 'graphviz'
+require 'pathname'
+require 'fileutils'
 module InversionOfControl
 
   class Node
@@ -94,6 +96,12 @@ module InversionOfControl
         end
       end
 
+      pathname = Pathname.new(file_path)
+
+      unless pathname.dirname.directory?
+        FileUtils.mkdir_p(pathname.dirname)
+      end
+      
       g.output( :png => file_path )
     end
   end
