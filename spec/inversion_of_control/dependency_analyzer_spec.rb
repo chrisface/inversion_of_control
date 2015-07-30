@@ -44,6 +44,7 @@ describe InversionOfControl::DependencyAnalyzer do
       end
 
       context "through three classes" do
+      let(:file_path) { 'tmp/cyclic_dependency_3_classes.png' }
         before(:each) do
           class DependencyA
             include InversionOfControl
@@ -72,11 +73,13 @@ describe InversionOfControl::DependencyAnalyzer do
         end
 
         it "generates a graph for the cyclical dependency" do
-          InversionOfControl.dependency_analyzer.generate_graph('tmp/cyclic_dependency_3_classes.png')
+          InversionOfControl.dependency_analyzer.generate_graph(file_path)
+          expect(File.exist?(file_path)).to be(true)
         end
       end
 
       context "with a loopback" do
+        let(:file_path) { 'tmp/cyclic_dependency_loopback.png' }
         before(:each) do
           class DependencyA
             include InversionOfControl
@@ -110,19 +113,21 @@ describe InversionOfControl::DependencyAnalyzer do
         end
 
         it "generates a graph for the cyclical dependency" do
-          InversionOfControl.dependency_analyzer.generate_graph('tmp/cyclic_dependency_loopback.png')
+          InversionOfControl.dependency_analyzer.generate_graph(file_path)
+          expect(File.exist?(file_path)).to be(true)
         end
       end
     end
 
     context "complex tree structure with constructed and static dependencies" do
+      let(:file_path) { 'tmp/complex_tree.png' }
       before(:each) do
-        class UserRepository ; end
+        class UserRepository; end
         class MailGun
           include InversionOfControl
           inject(:mail_api_key)
         end
-        class OrderRepository ; end
+        class OrderRepository; end
 
         class UserService
           include InversionOfControl
@@ -165,7 +170,8 @@ describe InversionOfControl::DependencyAnalyzer do
       end
 
       it "generates a graph for the complex tree" do
-        InversionOfControl.dependency_analyzer.generate_graph('tmp/complex_tree.png')
+        InversionOfControl.dependency_analyzer.generate_graph(file_path)
+        expect(File.exist?(file_path)).to be(true)
       end
     end
   end
