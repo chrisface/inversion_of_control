@@ -39,18 +39,18 @@ module InversionOfControl
 
     def resolve_dependencies_from_keywords!(keyword_args)
       resolved_dependencies = keyword_args.select do |arg_name, arg_value|
-        @dependencies.include?(arg_name)
+        dependencies.include?(arg_name)
       end
 
       keyword_args.reject! do |arg_name|
-        @dependencies.include?(arg_name)
+        dependencies.include?(arg_name)
       end
 
       resolved_dependencies
     end
 
     def resolve_dependencies_from_class(existing_resolved_dependencies: {})
-      @dependencies.inject({}) do |resolved_dependencies, dependency|
+      dependencies.inject({}) do |resolved_dependencies, dependency|
         resolved_dependency = InversionOfControl.resolve_dependency(dependency, existing_resolved_dependencies)
 
         resolved_dependencies[dependency] = resolved_dependency

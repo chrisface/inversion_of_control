@@ -112,7 +112,6 @@ module InversionOfControl
   def self.included(klass)
     klass.extend(InversionOfControl::DSL)
     klass.extend(InversionOfControl::Builder)
-    dependency_analyzer.track_class(klass)
   end
 
   def inject_dependency(dependency, resolved_dependency)

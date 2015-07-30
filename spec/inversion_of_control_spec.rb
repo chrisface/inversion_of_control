@@ -58,6 +58,7 @@ describe InversionOfControl do
       let!(:dummy_class) do
         Class.new do
           include InversionOfControl
+          inject()
         end
       end
 
