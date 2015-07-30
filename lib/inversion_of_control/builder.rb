@@ -1,5 +1,6 @@
 module InversionOfControl
   module Builder
+
     def build(*params, **keyword_args, &block)
       overriden_dependencies = resolve_dependencies_from_keywords!(keyword_args)
 
@@ -18,6 +19,17 @@ module InversionOfControl
       class_instance.inject_dependencies(resolved_dependencies)
 
       class_instance
+    end
+
+    def self.extended(klass)
+      klass.send(:define_method, :initialize_with_inject_dependencies) do |*params, **keyword_args, &block|
+        self.inject_dependencies(self.class.resolve_dependencies_from_class)
+      end
+
+      if InversionOfControl.configuration.inject_on_initialize
+        klass.send(:alias_method, :initialize_without_inject_dependencies, :initialize)
+        klass.send(:alias_method, :initialize, :initialize_with_inject_dependencies)
+      end
     end
 
     def resolve_dependencies_from_keywords!(keyword_args)

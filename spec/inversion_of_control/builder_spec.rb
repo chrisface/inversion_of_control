@@ -1,6 +1,36 @@
 require 'spec_helper'
 
 describe InversionOfControl::Builder do
+
+
+  describe "#initialize" do
+    let(:dummy_class) do
+      Class.new do
+        include InversionOfControl
+        inject(:dependency_a, :dependency_b)
+      end
+    end
+
+    let(:resolved_dependency_a) { double }
+    let(:resolved_dependency_b) { double }
+
+    before(:each) do
+      InversionOfControl.configure do |config|
+        config.dependencies[:dependency_a] = resolved_dependency_a
+        config.dependencies[:dependency_b] = resolved_dependency_b
+        config.inject_on_initialize = true
+      end
+    end
+
+    it "injects the dependencies" do
+      dummy_instance = dummy_class.new
+      expect(dummy_instance.class).to be(dummy_class)
+
+      expect(dummy_instance.dependency_a).to eq(resolved_dependency_a)
+      expect(dummy_instance.dependency_b).to eq(resolved_dependency_b)
+    end
+  end
+
   describe ".build" do
 
     let(:dummy_class) do
@@ -51,16 +81,16 @@ describe InversionOfControl::Builder do
           end
         end
 
-        let(:resloved_dependency_a) { double }
-        let(:resloved_dependency_b) { double }
+        let(:resolved_dependency_a) { double }
+        let(:resolved_dependency_b) { double }
 
         let(:overriden_dependency_a) { double }
         let(:overriden_dependency_b) { double }
 
         before(:each) do
           InversionOfControl.configure do |config|
-            config.dependencies[:dependency_a] = resloved_dependency_a
-            config.dependencies[:dependency_b] = resloved_dependency_b
+            config.dependencies[:dependency_a] = resolved_dependency_a
+            config.dependencies[:dependency_b] = resolved_dependency_b
           end
         end
 
@@ -138,11 +168,11 @@ describe InversionOfControl::Builder do
     end
 
     context "with configured dependencies" do
-      let(:resloved_dependency) { double() }
+      let(:resolved_dependency) { double() }
 
       before(:each) do
         InversionOfControl.configure do |config|
-          config.dependencies[:a_dependency] = resloved_dependency
+          config.dependencies[:a_dependency] = resolved_dependency
         end
       end
 
@@ -156,7 +186,7 @@ describe InversionOfControl::Builder do
       let(:dummy_instance) { dummy_class.build }
 
       it "injects dependencies" do
-        expect(dummy_instance.a_dependency).to eq(resloved_dependency)
+        expect(dummy_instance.a_dependency).to eq(resolved_dependency)
       end
     end
 
