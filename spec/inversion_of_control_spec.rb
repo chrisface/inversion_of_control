@@ -111,8 +111,6 @@ describe InversionOfControl do
         let(:auto_resolve) { true }
 
         it "resolves the dependency based on the name of the dependency" do
-          expected_error = "un-registered dependency: unregistered"
-
           resolved_dependency = described_class.resolve_dependency(:test_dependency)
           expect(resolved_dependency).to eq(TestDependency)
         end
@@ -151,7 +149,7 @@ describe InversionOfControl do
 
     context "when the dependency is a class" do
       let(:resolved_dependency) {
-        Class.new do end
+        Class.new
       }
       context "and the instantiate_dependencies config option is ON" do
         let(:instantiate_dependencies) { true }
@@ -232,7 +230,6 @@ describe InversionOfControl do
     let(:a_dependency_resolved) { double }
 
     it "injects the dependency" do
-      expect(dummy_instance.a_dependency).to be_nil
       dummy_instance.inject_dependency(:a_dependency, a_dependency_resolved)
       expect(dummy_instance.a_dependency).to eq(a_dependency_resolved)
     end
@@ -254,9 +251,6 @@ describe InversionOfControl do
     let(:b_dependency_resolved) { double }
 
     it "injects the dependency" do
-      expect(dummy_instance.a_dependency).to be_nil
-      expect(dummy_instance.b_dependency).to be_nil
-
       dummy_instance.inject_dependencies(
         a_dependency: a_dependency_resolved,
         b_dependency: b_dependency_resolved

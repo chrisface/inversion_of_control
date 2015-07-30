@@ -33,7 +33,7 @@ module InversionOfControl
     end
 
     def resolve_dependencies_from_class(existing_resolved_dependencies: {})
-      resolved_dependencies = @dependencies.inject({}) do |resolved_dependencies, dependency|
+      @dependencies.inject({}) do |resolved_dependencies, dependency|
         resolved_dependency = InversionOfControl.resolve_dependency(dependency, existing_resolved_dependencies)
 
         resolved_dependencies[dependency] = resolved_dependency

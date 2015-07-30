@@ -28,10 +28,10 @@ module InversionOfControl
   end
 
   def self.resolve_dependency(dependency, resolved_dependencies={})
-    resolved_dependency = @configuration.dependencies[dependency]
+    resolved_dependency = configuration.dependencies[dependency]
 
     # Try and find the dependency by name when missing if the config is turned on
-    if resolved_dependency.nil? && @configuration.auto_resolve_unregistered_dependency
+    if resolved_dependency.nil? && configuration.auto_resolve_unregistered_dependency
       resolved_dependency = self.resolve_dependency_by_name(dependency)
     end
 
@@ -89,7 +89,7 @@ module InversionOfControl
 
   def self.prepare_resolved_dependency(resolved_dependency)
 
-    instantiate_dependencies = @configuration.instantiate_dependencies
+    instantiate_dependencies = configuration.instantiate_dependencies
 
     if resolved_dependency.is_a?(Hash)
       prepared_dependency = resolved_dependency[:dependency]
@@ -106,7 +106,7 @@ module InversionOfControl
   end
 
   def self.register_dependency(dependency_name, dependency)
-    @configuration.dependencies[dependency_name] = dependency
+    configuration.dependencies[dependency_name] = dependency
   end
 
   def self.included(klass)
@@ -116,7 +116,8 @@ module InversionOfControl
   end
 
   def inject_dependency(dependency, resolved_dependency)
-    self.instance_variable_set("@#{dependency}", resolved_dependency)
+    self.class.send(:attr_accessor, dependency)
+    self.public_send("#{dependency}=", resolved_dependency)
   end
 
   def inject_dependencies(dependencies = self.class.resolve_dependencies_from_class)
@@ -125,5 +126,3 @@ module InversionOfControl
     end
   end
 end
-
-

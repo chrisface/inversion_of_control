@@ -39,11 +39,6 @@ describe InversionOfControl::DSL do
       it "registers the dependency on the class" do
         expect(dummy_class.dependencies).to match_array([:example_dependency])
       end
-
-      it "adds accessors for the dependency" do
-        expect(dummy_class.instance_methods).to include(:example_dependency)
-        expect(dummy_class.instance_methods).to include(:example_dependency=)
-      end
     end
 
     context "with multiple dependencies" do
@@ -56,14 +51,6 @@ describe InversionOfControl::DSL do
 
       it "registers the dependencies on the class" do
         expect(dummy_class.dependencies).to match_array([:example_dependency_1, :example_dependency_2])
-      end
-
-      it "adds accessors for the dependencies" do
-        expect(dummy_class.instance_methods).to include(:example_dependency_1)
-        expect(dummy_class.instance_methods).to include(:example_dependency_1=)
-
-        expect(dummy_class.instance_methods).to include(:example_dependency_2)
-        expect(dummy_class.instance_methods).to include(:example_dependency_2=)
       end
     end
   end

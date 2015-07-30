@@ -9,7 +9,6 @@ module InversionOfControl
 
     def inject(*dependencies)
       @dependencies = dependencies
-      @dependencies.each { |dependency| self.send(:attr_accessor, dependency) }
     end
   end
 end
