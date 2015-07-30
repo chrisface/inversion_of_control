@@ -23,6 +23,11 @@ module InversionOfControl
 
     def self.extended(klass)
       klass.send(:define_method, :initialize_with_inject_dependencies) do |*params, **keyword_args, &block|
+        if keyword_args.empty?
+          initialize_without_inject_dependencies(*params, &block)
+        else
+          initialize_without_inject_dependencies(*params, **keyword_args, &block)
+        end
         self.inject_dependencies(self.class.resolve_dependencies_from_class)
       end
 
