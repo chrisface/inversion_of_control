@@ -28,13 +28,14 @@ module InversionOfControl
         else
           initialize_without_inject_dependencies(*params, **keyword_args, &block)
         end
-        self.inject_dependencies(self.class.resolve_dependencies_from_class)
+
+        if InversionOfControl.configuration.inject_on_initialize
+          self.inject_dependencies(self.class.resolve_dependencies_from_class)
+        end
       end
 
-      if InversionOfControl.configuration.inject_on_initialize
-        klass.send(:alias_method, :initialize_without_inject_dependencies, :initialize)
-        klass.send(:alias_method, :initialize, :initialize_with_inject_dependencies)
-      end
+      klass.send(:alias_method, :initialize_without_inject_dependencies, :initialize)
+      klass.send(:alias_method, :initialize, :initialize_with_inject_dependencies)
     end
 
     def resolve_dependencies_from_keywords!(keyword_args)
