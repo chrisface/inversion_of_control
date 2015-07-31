@@ -107,7 +107,8 @@ module InversionOfControl
         FileUtils.mkdir_p(pathname.dirname)
       end
 
-      g.output( :png => file_path )
+      # g.output( :png => file_path )
+      g.output(dot: file_path )
     end
   end
 end
