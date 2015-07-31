@@ -23,7 +23,7 @@ module InversionOfControl
         end
       end
 
-      @dependencies = dependencies
+      @dependencies = dependencies.uniq
     end
   end
 end

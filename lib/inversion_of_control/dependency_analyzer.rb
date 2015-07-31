@@ -33,7 +33,7 @@ module InversionOfControl
     end
 
     def track_class(klass)
-      @tracked_classes << klass
+      @tracked_classes << klass unless @tracked_classes.include?(klass)
     end
 
     def generate_graph(file_path)
