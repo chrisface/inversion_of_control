@@ -19,7 +19,7 @@ describe InversionOfControl::DSL do
       let(:dummy_class) do
         Class.new do
           extend InversionOfControl::DSL
-          inject()
+          inject_dependencies()
         end
       end
 
@@ -32,7 +32,7 @@ describe InversionOfControl::DSL do
       let(:dummy_class) do
         Class.new do
           extend InversionOfControl::DSL
-          inject(:example_dependency)
+          inject_dependencies(:example_dependency)
         end
       end
 
@@ -45,7 +45,7 @@ describe InversionOfControl::DSL do
       let(:dummy_class) do
         Class.new do
           extend InversionOfControl::DSL
-          inject(:example_dependency_1, :example_dependency_2)
+          inject_dependencies(:example_dependency_1, :example_dependency_2)
         end
       end
 

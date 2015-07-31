@@ -58,16 +58,16 @@ describe InversionOfControl do
       let!(:dummy_class) do
         Class.new do
           include InversionOfControl
-          inject()
+          inject_dependencies()
         end
       end
 
       it "adds the dsl methods to the class" do
-        expect(dummy_class).to respond_to(:inject)
+        expect(dummy_class).to respond_to(:inject_dependencies)
       end
 
-      it "adds the build method for instantiation" do
-        expect(dummy_class).to respond_to(:build)
+      it "adds the assemble method for instantiation" do
+        expect(dummy_class).to respond_to(:assemble)
       end
 
       it "tracks the class in the dependency analyzer" do
@@ -220,11 +220,11 @@ describe InversionOfControl do
     let(:dummy_class) do
       Class.new do
         include InversionOfControl
-        inject(:a_dependency)
+        inject_dependencies(:a_dependency)
       end
     end
 
-    # Using the .build method would trigger automatic injection, we don't want
+    # Using the .assemble method would trigger automatic injection, we don't want
     # that for this test as we're testing the injection itself
     let(:dummy_instance) { dummy_class.new }
 
@@ -240,11 +240,11 @@ describe InversionOfControl do
     let(:dummy_class) do
       Class.new do
         include InversionOfControl
-        inject(:a_dependency, :b_dependency)
+        inject_dependencies(:a_dependency, :b_dependency)
       end
     end
 
-    # Using the .build method would trigger automatic injection, we don't want
+    # Using the .assemble method would trigger automatic injection, we don't want
     # that for this test as we're testing the injection itself
     let(:dummy_instance) { dummy_class.new}
 

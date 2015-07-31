@@ -19,12 +19,12 @@ describe InversionOfControl::DependencyAnalyzer do
         before(:each) do
           class DependencyA
             include InversionOfControl
-            inject(:dependency_b)
+            inject_dependencies(:dependency_b)
           end
 
           class DependencyB
             include InversionOfControl
-            inject(:dependency_a)
+            inject_dependencies(:dependency_a)
           end
 
           InversionOfControl.configure do |config|
@@ -48,17 +48,17 @@ describe InversionOfControl::DependencyAnalyzer do
         before(:each) do
           class DependencyA
             include InversionOfControl
-            inject(:dependency_b)
+            inject_dependencies(:dependency_b)
           end
 
           class DependencyB
             include InversionOfControl
-            inject(:dependency_c)
+            inject_dependencies(:dependency_c)
           end
 
           class DependencyC
             include InversionOfControl
-            inject(:dependency_a)
+            inject_dependencies(:dependency_a)
           end
 
           InversionOfControl.configure do |config|
@@ -83,22 +83,22 @@ describe InversionOfControl::DependencyAnalyzer do
         before(:each) do
           class DependencyA
             include InversionOfControl
-            inject(:dependency_b)
+            inject_dependencies(:dependency_b)
           end
 
           class DependencyB
             include InversionOfControl
-            inject(:dependency_c)
+            inject_dependencies(:dependency_c)
           end
 
           class DependencyC
             include InversionOfControl
-            inject(:dependency_a, :dependency_b, :dependency_d)
+            inject_dependencies(:dependency_a, :dependency_b, :dependency_d)
           end
 
           class DependencyD
             include InversionOfControl
-            inject(:dependency_b)
+            inject_dependencies(:dependency_b)
           end
 
           InversionOfControl.configure do |config|
@@ -125,23 +125,23 @@ describe InversionOfControl::DependencyAnalyzer do
         class UserRepository; end
         class MailGun
           include InversionOfControl
-          inject(:mail_api_key)
+          inject_dependencies(:mail_api_key)
         end
         class OrderRepository; end
 
         class UserService
           include InversionOfControl
-          inject(:user_repository)
+          inject_dependencies(:user_repository)
         end
 
         class OrderManager
           include InversionOfControl
-          inject(:order_repository, :mail_service, :manager_config)
+          inject_dependencies(:order_repository, :mail_service, :manager_config)
         end
 
         class UserOrders
           include InversionOfControl
-          inject(:order_manager, :user_service)
+          inject_dependencies(:order_manager, :user_service)
         end
 
         InversionOfControl.configure do |config|

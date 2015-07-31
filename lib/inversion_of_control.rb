@@ -1,7 +1,7 @@
 require "inversion_of_control/version"
 require "inversion_of_control/configuration"
 require "inversion_of_control/dsl"
-require "inversion_of_control/builder"
+require "inversion_of_control/assembler"
 require "inversion_of_control/dependency_analyzer"
 
 module InversionOfControl
@@ -111,7 +111,7 @@ module InversionOfControl
 
   def self.included(klass)
     klass.extend(InversionOfControl::DSL)
-    klass.extend(InversionOfControl::Builder)
+    klass.extend(InversionOfControl::Assembler)
   end
 
   def inject_dependency(dependency, resolved_dependency)

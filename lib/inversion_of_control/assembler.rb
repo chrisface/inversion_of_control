@@ -1,7 +1,7 @@
 module InversionOfControl
-  module Builder
+  module Assembler
 
-    def build(*params, **keyword_args, &block)
+    def assemble(*params, **keyword_args, &block)
       overriden_dependencies = resolve_dependencies_from_keywords!(keyword_args)
 
       if keyword_args.empty?

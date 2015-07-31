@@ -1,13 +1,11 @@
 require 'spec_helper'
 
-describe InversionOfControl::Builder do
-
-
+describe InversionOfControl::Assembler do
   describe "#initialize" do
     let(:dummy_class) do
       Class.new do
         include InversionOfControl
-        inject(:dependency_a, :dependency_b)
+        inject_dependencies(:dependency_a, :dependency_b)
       end
     end
 
@@ -31,7 +29,7 @@ describe InversionOfControl::Builder do
     end
   end
 
-  describe ".build" do
+  describe ".assemble" do
 
     let(:dummy_class) do
       Class.new do
@@ -41,7 +39,7 @@ describe InversionOfControl::Builder do
 
     context "with no parameters" do
       it "instantiates the class" do
-        dummy_instance = dummy_class.build
+        dummy_instance = dummy_class.assemble
         expect(dummy_instance.class).to be(dummy_class)
       end
     end
@@ -63,7 +61,7 @@ describe InversionOfControl::Builder do
 
       context "and no dependency overrides" do
         it "instantiates the class with params", focus: true do
-          dummy_instance = dummy_class.build(param_1, param_2, param_3)
+          dummy_instance = dummy_class.assemble(param_1, param_2, param_3)
           expect(dummy_instance.class).to be(dummy_class)
 
           expect(dummy_class).to have_received(:new).with(param_1, param_2, param_3)
@@ -76,7 +74,7 @@ describe InversionOfControl::Builder do
         let(:dummy_class) do
           Class.new do
             include InversionOfControl
-            inject(:dependency_a, :dependency_b)
+            inject_dependencies(:dependency_a, :dependency_b)
             def initialize(param_1, param_2, param_3:) end
           end
         end
@@ -95,7 +93,7 @@ describe InversionOfControl::Builder do
         end
 
         it "instantiates the class with the params" do
-          dummy_instance = dummy_class.build(
+          dummy_instance = dummy_class.assemble(
             param_1,
             param_2,
             param_3: param_3,
@@ -108,7 +106,7 @@ describe InversionOfControl::Builder do
         end
 
         it "overrides the dependency" do
-          dummy_instance = dummy_class.build(
+          dummy_instance = dummy_class.assemble(
             param_1,
             param_2,
             param_3: param_3,
@@ -137,7 +135,7 @@ describe InversionOfControl::Builder do
       before(:each) { allow(dummy_class).to receive(:new).and_call_original }
 
       it "instantiates the class with keyword arguments" do
-        dummy_instance = dummy_class.build(params)
+        dummy_instance = dummy_class.assemble(params)
         expect(dummy_instance.class).to be(dummy_class)
 
         expect(dummy_class).to have_received(:new).with(params)
@@ -158,7 +156,7 @@ describe InversionOfControl::Builder do
       let(:block_hook) { double("block_hook", hooked: true) }
 
       it "instantiates the class with a block" do
-        dummy_instance = dummy_class.build do
+        dummy_instance = dummy_class.assemble do
           block_hook.hooked
         end
 
@@ -179,11 +177,11 @@ describe InversionOfControl::Builder do
       let(:dummy_class) do
         Class.new do
           include InversionOfControl
-          inject(:a_dependency)
+          inject_dependencies(:a_dependency)
         end
       end
 
-      let(:dummy_instance) { dummy_class.build }
+      let(:dummy_instance) { dummy_class.assemble }
 
       it "injects dependencies" do
         expect(dummy_instance.a_dependency).to eq(resolved_dependency)
@@ -204,12 +202,12 @@ describe InversionOfControl::Builder do
         before(:each) do
           class DependencyA
             include InversionOfControl
-            inject(:dependency_b)
+            inject_dependencies(:dependency_b)
           end
 
           class DependencyB
             include InversionOfControl
-            inject(:dependency_a)
+            inject_dependencies(:dependency_a)
           end
         end
 
@@ -220,7 +218,7 @@ describe InversionOfControl::Builder do
         end
 
         it "injects the classes into each other" do
-          dependency_a = DependencyA.build
+          dependency_a = DependencyA.assemble
           dependency_b = dependency_a.dependency_b
           dependency_a_circular = dependency_b.dependency_a
 
@@ -232,17 +230,17 @@ describe InversionOfControl::Builder do
         before(:each) do
           class DependencyA
             include InversionOfControl
-            inject(:dependency_b)
+            inject_dependencies(:dependency_b)
           end
 
           class DependencyB
             include InversionOfControl
-            inject(:dependency_c)
+            inject_dependencies(:dependency_c)
           end
 
           class DependencyC
             include InversionOfControl
-            inject(:dependency_a)
+            inject_dependencies(:dependency_a)
           end
         end
 
@@ -253,7 +251,7 @@ describe InversionOfControl::Builder do
         end
 
         it "injects the classes into each other" do
-          dependency_a = DependencyA.build
+          dependency_a = DependencyA.assemble
           dependency_b = dependency_a.dependency_b
           dependency_c = dependency_b.dependency_c
           dependency_a_circular = dependency_c.dependency_a
@@ -266,17 +264,17 @@ describe InversionOfControl::Builder do
         before(:each) do
           class DependencyA
             include InversionOfControl
-            inject(:dependency_b)
+            inject_dependencies(:dependency_b)
           end
 
           class DependencyB
             include InversionOfControl
-            inject(:dependency_c)
+            inject_dependencies(:dependency_c)
           end
 
           class DependencyC
             include InversionOfControl
-            inject(:dependency_a, :dependency_b, :dependency_d)
+            inject_dependencies(:dependency_a, :dependency_b, :dependency_d)
           end
 
           class DependencyD
@@ -290,7 +288,7 @@ describe InversionOfControl::Builder do
         end
 
         it "injects the classes into each other" do
-          dependency_a = DependencyA.build
+          dependency_a = DependencyA.assemble
           dependency_b = dependency_a.dependency_b
           dependency_c = dependency_b.dependency_c
           dependency_a_circular = dependency_c.dependency_a

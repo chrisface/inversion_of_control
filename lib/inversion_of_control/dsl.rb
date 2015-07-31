@@ -7,7 +7,7 @@ module InversionOfControl
       @dependencies || []
     end
 
-    def inject(*dependencies)
+    def inject_dependencies(*dependencies)
       InversionOfControl.dependency_analyzer.track_class(self)
 
       if dependencies.nil?

@@ -64,9 +64,9 @@ end
 
 ###Injecting dependencies
 
-Include the `InversionOfControl` module to classes that have dependencies. This adds a `.build` method to the class to be used in place of `.new`.
+Include the `InversionOfControl` module to classes that have dependencies. This adds a `.assemble` method to the class to be used in place of `.new`.
 
-When using `.build`, dependencies will be automatically injected and an `attr_accessor` for each dependency is also created.
+When using `.assemble`, dependencies will be automatically injected and an `attr_accessor` for each dependency is also created.
 
 Alternatively calling `.new` and then `.inject_dependencies` will have the same result which can be used when you are not control of the instantiation of the class.
 
@@ -75,7 +75,7 @@ It should be noted that dependencies are not available during the `initializatio
 ```
 class MyClass
   include InversionOfControl
-  inject(:user_repository, :mail_service)
+  inject_dependencies(:user_repository, :mail_service)
 
   def email_user
     user = user_repository.find_user
@@ -83,14 +83,14 @@ class MyClass
   end
 end
 
-MyClass.build
+MyClass.assemble
 ```
 
 ###instantiate_dependencies
 
 If you are registering multiple classes which need to be instantiated upon injection the `instantiate_dependencies` configuration flag can be set to true (off by default). This will by default attempt to instantiate any dependency that is a Class.
 
-If the dependency itself includes the `InversionOfControl` module it will use the `.build` method so that further dependencies can be resolved.
+If the dependency itself includes the `InversionOfControl` module it will use the `.assemble` method so that further dependencies can be resolved.
 
 **Manual configuration**
 ```
@@ -144,14 +144,14 @@ InversionOfControl.register_dependencies(
 
 ###Overriding dependencies
 
-It is possible to override the dependencies injected when using the `.build` method. This is acheived by providing additional keyword arguments for the dependencies.
+It is possible to override the dependencies injected when using the `.assemble` method. This is acheived by providing additional keyword arguments for the dependencies.
 
 This does not interfere with the arguments of the initialize method which are passed through as normal without the dependencies.
 
 ```
 class MyClass
   include InversionOfControl
-  inject(:user_repository, :mail_service)
+  inject_dependencies(:user_repository, :mail_service)
 
   def initialize(param_1, keyword_1:)
   end
@@ -162,21 +162,21 @@ class MyClass
   end
 end
 
-MyClass.build("param_1", keyword_1: "keyword_1", mail_service: MailChimp)
+MyClass.assemble("param_1", keyword_1: "keyword_1", mail_service: MailChimp)
 ```
 
 At any point after the class has been instantiated dependencies can be re-injected. To override an already injected dependency the instance method `#.inject_dependency` can be called.
 
 **inject single dependency**
 ```
-my_instance = MyClass.build
+my_instance = MyClass.assemble
 my_isntance.inject_dependency(:mail_service, MailChimp)
 
 ```
 
 **inject multiple dependencies**
 ```
-my_instance = MyClass.build
+my_instance = MyClass.assemble
 
 my_isntance.inject_dependencies(
   mail_service: MailChimp,
@@ -186,7 +186,7 @@ my_isntance.inject_dependencies(
 
 **inject the default dependencies**
 ```
-my_instance = MyClass.build
+my_instance = MyClass.assemble
 my_isntance.inject_dependencies
 ```
 
