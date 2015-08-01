@@ -8,7 +8,9 @@ module InversionOfControl
     end
 
     def inject_dependencies(*dependencies)
-      InversionOfControl.dependency_analyzer.track_class(self)
+      if InversionOfControl.configuration.analyze_dependencies
+        InversionOfControl.dependency_analyzer.track_class(self)
+      end
 
       if dependencies.nil?
         self.ancestors.each_with_index do |ancestor, index|
