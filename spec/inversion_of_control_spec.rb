@@ -69,11 +69,6 @@ describe InversionOfControl do
       it "adds the assemble method for instantiation" do
         expect(dummy_class).to respond_to(:assemble)
       end
-
-      it "tracks the class in the dependency analyzer" do
-        da = InversionOfControl.dependency_analyzer
-        expect(da.tracked_classes).to match_array(dummy_class)
-      end
     end
   end
 
