@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe InversionOfControl::DependencyAnalyzer do
+  before(:each) do
+    InversionOfControl.configuration.analyze_dependencies = true
+  end
 
   context "#track_class" do
     context "when a class is tracked" do
